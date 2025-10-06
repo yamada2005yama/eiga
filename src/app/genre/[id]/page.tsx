@@ -34,6 +34,7 @@ async function getGenres(): Promise<Genre[]> {
 }
 
 // --- PAGE COMPONENT ---
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function GenrePage(props: any) {
   const { params, searchParams } = props;
   const genreId = params.id;
