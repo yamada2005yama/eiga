@@ -38,7 +38,9 @@ async function getSimilarMovies(id: string): Promise<SimilarMoviesResults> {
 }
 
 // --- PAGE COMPONENT ---
-export default async function MovieDetailPage({ params }: { params: { id: string } }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function MovieDetailPage(props: any) {
+  const { params } = props;
   const [movie, credits, providers, similar] = await Promise.all([
     getMovieDetails(params.id),
     getMovieCredits(params.id),
