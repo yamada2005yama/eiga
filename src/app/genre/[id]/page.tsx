@@ -2,34 +2,55 @@ import Image from 'next/image';
 import Link from 'next/link';
 import PaginationControls from '@/components/PaginationControls';
 
+// --- TYPE DEFINITIONS ---
 interface Movie {
   id: number;
   title: string;
   poster_path: string;
 }
 
+interface Genre {
+  id: number;
+  name: string;
+}
+
+// --- DATA FETCHING ---
 async function getMoviesByGenre(genreId: string, page: number): Promise<{ movies: Movie[]; totalPages: number; }> {
   const apiKey = process.env.TMDB_API_KEY;
   const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${genreId}&language=ja-JP&sort_by=popularity.desc&page=${page}`;
-
   const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error('Failed to fetch movies by genre');
-  }
+  if (!res.ok) throw new Error('Failed to fetch movies by genre');
   const data = await res.json();
   return { movies: data.results, totalPages: data.total_pages };
 }
 
+async function getGenres(): Promise<Genre[]> {
+  const apiKey = process.env.TMDB_API_KEY;
+  const url = `https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}&language=ja-JP`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch genres');
+  const data = await res.json();
+  return data.genres || [];
+}
+
+// --- PAGE COMPONENT ---
 type Props = {
   params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 export default async function GenrePage({ params, searchParams }: Props) {
   const genreId = params.id;
-  const genreName = typeof searchParams?.name === 'string' ? searchParams.name : '';
   const page = Number(searchParams?.page ?? '1');
-  const { movies, totalPages } = await getMoviesByGenre(genreId, page);
+
+  // Fetch movies and the genre list in parallel
+  const [{ movies, totalPages }, allGenres] = await Promise.all([
+    getMoviesByGenre(genreId, page),
+    getGenres(),
+  ]);
+
+  // Find the current genre's name from the full list
+  const genreName = allGenres.find(g => g.id.toString() === genreId)?.name || '';
 
   const hasNextPage = page < totalPages;
   const hasPrevPage = page > 1;
