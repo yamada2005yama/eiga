@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 interface PaginationControlsProps {
@@ -16,10 +16,8 @@ export default function PaginationControls({
   totalPages,
   basePath
 }: PaginationControlsProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const page = searchParams.get('page') ?? '1';
-  const per_page = searchParams.get('per_page') ?? '20'; // Not used in API call, just for URL
 
   const getPageUrl = (pageNumber: number) => {
     const params = new URLSearchParams(searchParams);

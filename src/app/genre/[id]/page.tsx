@@ -20,13 +20,12 @@ async function getMoviesByGenre(genreId: string, page: number): Promise<{ movies
   return { movies: data.results, totalPages: data.total_pages };
 }
 
-export default async function GenrePage({
-  params,
-  searchParams,
-}: {
+type Props = {
   params: { id: string };
   searchParams?: { [key: string]: string | string[] | undefined };
-}) {
+};
+
+export default async function GenrePage({ params, searchParams }: Props) {
   const genreId = params.id;
   const genreName = typeof searchParams?.name === 'string' ? searchParams.name : '';
   const page = Number(searchParams?.page ?? '1');
