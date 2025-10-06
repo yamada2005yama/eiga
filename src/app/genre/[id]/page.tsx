@@ -34,12 +34,8 @@ async function getGenres(): Promise<Genre[]> {
 }
 
 // --- PAGE COMPONENT ---
-type Props = {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
-export default async function GenrePage({ params, searchParams }: Props) {
+export default async function GenrePage(props: any) {
+  const { params, searchParams } = props;
   const genreId = params.id;
   const page = Number(searchParams?.page ?? '1');
 
